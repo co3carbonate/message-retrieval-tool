@@ -74,6 +74,11 @@ var l = chat.length;
 var filter = function(info, input) {
 	return getNo(info.body) == input;
 };
+function strip(html) {
+	var tmp = document.createElement("DIV");
+	tmp.innerHTML = html;
+	return tmp.textContent || tmp.innerText || "";
+}
 function getNo(str) {
     var l = str.length;
     if(l == 0) return null;
@@ -85,7 +90,7 @@ function getNo(str) {
             r += s;
             continue;
         }
-        else if(s == ',' || s == ' ') {
+        else if([' ', ',', '~', '^', '#', '*', '>'].indexOf(s) > -1) {
             continue;
         } else {
             break;    
@@ -216,7 +221,7 @@ function retrieve() {
 		newCols.author.innerHTML = (info.author) ? 
 			'<a href="https://www.reddit.com/user/' + info.author + '">/u/' + info.author + '</a>'
 		: '[deleted]';
-		newCols.body.innerHTML = info.body; // TODO: Change to info.body_html
+		newCols.body.innerHTML = info.body;
 		newCols.url.innerHTML = '<a href="https://www.reddit.com/live/ta535s1hq2je/updates/' + info.id + '">' + (i+1) + '</a>';
 
 		var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
