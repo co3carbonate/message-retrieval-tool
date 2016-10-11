@@ -74,11 +74,6 @@ var l = chat.length;
 var filter = function(info, input) {
 	return getNo(info.body) == input;
 };
-function strip(html) {
-	var tmp = document.createElement("DIV");
-	tmp.innerHTML = html;
-	return tmp.textContent || tmp.innerText || "";
-}
 function getNo(str) {
     var l = str.length;
     if(l == 0) return null;
@@ -148,6 +143,7 @@ Created by <a href='https://www.reddit.com/user/co3_carbonate/'>/u/co3_carbonate
 	<th>Time (<span id='timezone'>...</span>)</th>
 	<th>Author</th>
 	<th>Body</th>
+	<th></th>
 </tr></thead>
 <tbody id='table'></tbody>
 </table>
@@ -182,6 +178,7 @@ selectedInput.focus();
 var radios = document.getElementsByName('retrieveRadio');
 var inputs = document.querySelectorAll('label input[type=text], label input[type=number]');
 var labels = document.querySelectorAll('label');
+var firstLookup = true;
 
 </script>
 
@@ -197,12 +194,15 @@ function retrieve() {
 	// lookup
 	var results = [];
 	for(var i = 0; i < l; i++) {
-		var info = chat[i];
+		var info = (chat[i]);
+		if(firstLookup) info.prevName = (i > 0) ? chat[i - 1].name : chat[i].name;
+
 		if(filter(info, input)) {
 			results.push(info);
 		}
 	}
 	results.reverse();
+	firstLookup = false;
 
 	// display results
 	var x = results.length;
@@ -213,16 +213,20 @@ function retrieve() {
 	for(var i = 0; i < x; i++) {
 		var info = results[i];
 		var newRow = document.createElement('tr');
-		var newCols = { 'author': document.createElement('td'),
-					    'time' : document.createElement('td'),
-					    'body' : document.createElement('td'),
-					    'url' : document.createElement('td') };
+		var newCols = {
+			'author': document.createElement('td'),
+			'time' : document.createElement('td'),
+			'body' : document.createElement('td'),
+			'url' : document.createElement('td'),
+			'operations': document.createElement('td')
+		};
 
 		newCols.author.innerHTML = (info.author) ? 
 			'<a href="https://www.reddit.com/user/' + info.author + '">/u/' + info.author + '</a>'
 		: '[deleted]';
 		newCols.body.innerHTML = info.body;
 		newCols.url.innerHTML = '<a href="https://www.reddit.com/live/ta535s1hq2je/updates/' + info.id + '">' + (i+1) + '</a>';
+		newCols.operations.innerHTML = "<a href='https://www.reddit.com/live/ta535s1hq2je/?after=" + info.prevName + "'><input type='button' value='context'/></a>";
 
 		var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 		var date = new Date(0);
@@ -236,6 +240,7 @@ function retrieve() {
 		newRow.appendChild(newCols.time);
 		newRow.appendChild(newCols.author);
 		newRow.appendChild(newCols.body);
+		newRow.appendChild(newCols.operations);
 		document.getElementById('table').appendChild(newRow);
 	}
 
