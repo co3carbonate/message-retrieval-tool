@@ -69,11 +69,7 @@ function checkIfLoaded() {
 <script>
 
 
-// Global variables and useful functions
-var l = chat.length;
-var filter = function(info, input) {
-	return getNo(info.body) == input;
-};
+// Useful functions
 function getNo(str) {
     var l = str.length;
     if(l == 0) return null;
@@ -146,7 +142,7 @@ Created by <a href='https://www.reddit.com/user/co3_carbonate/'>/u/co3_carbonate
 	<th></th>
 </tr></thead>
 <tbody id='table'></tbody>
-</table>
+</table><br><br>
 
 </div>
 
@@ -160,6 +156,8 @@ if(failedToLoad) {
 </script>
 <script>
 
+window.onload = function() {
+
 // Things to do when the document has loaded
 // Dynamically set text of certain parts of the document
 document.getElementById('lastUpdated').innerHTML = getNo(chat[0].body);
@@ -172,6 +170,10 @@ if (TZ == "GMT" && /(GMT\W*\d{4})/.test(now)) TZ = RegExp.$1;
 document.getElementById('timezone').innerHTML = TZ;
 
 // More global variables
+var l = chat.length;
+var filter = function(info, input) {
+	return getNo(info.body) == input;
+};
 var selected = document.getElementsByClassName('selected')[0];
 var selectedInput = selected.querySelector('input[type=text], input[type=number');
 selectedInput.focus();
@@ -180,9 +182,7 @@ var inputs = document.querySelectorAll('label input[type=text], label input[type
 var labels = document.querySelectorAll('label');
 var firstLookup = true;
 
-</script>
-
-<script>
+// --
 
 // Function to retrieve a message and display it to the table
 // The 'filter' global variable is used to determine which messages should be included in the table
@@ -194,7 +194,7 @@ function retrieve() {
 	// lookup
 	var results = [];
 	for(var i = 0; i < l; i++) {
-		var info = (chat[i]);
+		var info = chat[i];
 		if(firstLookup) info.prevName = (i > 0) ? chat[i - 1].name : chat[i].name;
 
 		if(filter(info, input)) {
@@ -246,11 +246,7 @@ function retrieve() {
 
 }
 
-
-
-</script>
-
-<script>
+// --
 
 // Trigger the retrieve function
 document.getElementById('retrieveBtn').onclick = retrieve;
@@ -325,6 +321,12 @@ function addOrMinus(val) {
 }
 document.getElementById('countIncrease').onclick = addOrMinus;
 document.getElementById('countDecrease').onclick = addOrMinus;
+
+
+
+
+
+}; // THE END
 
 </script>
 
