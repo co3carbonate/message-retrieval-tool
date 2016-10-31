@@ -1,7 +1,7 @@
 // Merge all chat files into a single chat array
 
 var chat = [];
-var lastChatFile = 6; // <-- modify accordingly
+var lastChatFile = 7; // <-- modify accordingly
 
 (function() {
 
@@ -21,7 +21,7 @@ function loadChatFiles() {
 	script.onerror = function() {
 		loadChatFiles();
 	};
-	script.src = 'chat' +currentChatFile+ '.js?v=1';
+	script.src = 'chat' +currentChatFile+ '.js?v=' +Date.now(); // prevent caching
 }
 loadChatFiles();
 
