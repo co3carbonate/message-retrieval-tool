@@ -21,7 +21,12 @@ function loadChatFiles() {
 	script.onerror = function() {
 		loadChatFiles();
 	};
-	script.src = 'chat' +currentChatFile+ '.js?v=' +Date.now(); // prevent caching
+	var suffix = '';
+	if(currentChatFile >= lastChatFile) {
+		// prevent caching of last file
+		suffix = '?v=' +Date.now()
+	}
+	script.src = 'chat' +currentChatFile+ '.js' +suffix;
 }
 loadChatFiles();
 
