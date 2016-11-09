@@ -21,8 +21,7 @@ function loadJSON(path, success, error) {
 				prevPercent += 100 / (lastChatFile + 2);
 				currentPercent = 0;
 				if(typeof loadingProgress === "function") {
-					loadingProgress(Math.floor(totalPercent));
-					console.log(currentPercent, prevPercent, totalPercent);
+					loadingProgress(prevPercent);
 				}
 			} else {
 				if (typeof error === "function") {
