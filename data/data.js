@@ -40,9 +40,9 @@ function loadChatData(i) {
 	// Base case
 	if(i < 0) return;
 
-	// Special case for last JSON file to prevent caching
+	// Special case for first (newest) JSON file to prevent caching
 	var suffix = '';
-	if(i == 0) suffix = '?v=' + Date.now();
+	if(i == lastChatFile) suffix = '?v=' + Date.now();
 
 	// Load this chat data file
 	loadJSON("data/chat" +i+ ".json" +suffix, function(data) {
