@@ -22,6 +22,7 @@ function loadJSON(path, success, error) {
 				currentPercent = 0;
 				if(typeof loadingProgress === "function") {
 					loadingProgress(Math.floor(totalPercent));
+					console.log(totalPercent);
 				}
 			} else {
 				if (typeof error === "function") {
