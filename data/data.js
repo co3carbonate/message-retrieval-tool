@@ -15,18 +15,22 @@ function loadJSON(path, success, error) {
 	xhr.onreadystatechange = function() {
 		if (xhr.readyState === XMLHttpRequest.DONE) {
 			if (xhr.status === 200) {
-				if (success) {
+				if (typeof success === "function") {
 					success(JSON.parse(xhr.responseText));
 				}
 				prevPercent += 100 / (lastChatFile + 2);
 				currentPercent = 0;
-				if(loadingProgress) loadingProgress(Math.floor(totalPercent));
+				if(typeof loadingProgress === "function") {
+					loadingProgress(Math.floor(totalPercent));
+				}
 			} else {
-				if (error) {
+				if (typeof error === "function") {
 					error(xhr);
 				} else {
 					failedToLoad = true;
-					if(loadingFailedCheck) loadingFailedCheck();
+					if(typeof loadingFailedCheck === "function") {
+						loadingFailedCheck();
+					}
 				}
 			}
 		}
@@ -36,7 +40,9 @@ function loadJSON(path, success, error) {
 		if(!lastChatFile) return;
 		currentPercent = (e.loaded / e.total) * 100;
 		totalPercent = prevPercent + currentPercent / (lastChatFile + 2);
-		if(loadingProgress) loadingProgress(Math.floor(totalPercent));
+		if(typeof loadingProgress === "function") {
+			loadingProgress(Math.floor(totalPercent));
+		}
 	};
 	xhr.open("GET", path, true);
 	xhr.send();
