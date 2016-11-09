@@ -14,6 +14,8 @@
   ga('send', 'pageview');
 </script>
 <style>
+
+/* Page style */
 h1 {
 	margin-bottom: 10px;
 }
@@ -56,20 +58,59 @@ th, td {
 th:first-child, td:first-child {
 	text-align: right;
 }
+
+/* Loading spinner style */
+.spinner {
+	margin: calc(50vh - (18px / 2)) auto 0px;
+	width: 70px;
+	text-align: center;
+}
+
+.spinner > div {
+	width: 18px;
+	height: 18px;
+	background-color: #333;
+
+	border-radius: 100%;
+	display: inline-block;
+	-webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+	animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}
+
+.spinner .bounce1 {
+	-webkit-animation-delay: -0.32s;
+	animation-delay: -0.32s;
+}
+
+.spinner .bounce2 {
+	-webkit-animation-delay: -0.16s;
+	animation-delay: -0.16s;
+}
+
+@-webkit-keyframes sk-bouncedelay {
+	0%, 80%, 100% { -webkit-transform: scale(0) }
+	40% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes sk-bouncedelay {
+	0%, 80%, 100% { 
+		-webkit-transform: scale(0);
+		transform: scale(0);
+	} 40% { 
+		-webkit-transform: scale(1.0);
+		transform: scale(1.0);
+	}
+}
+
 </style>
 <script>
+// Error connecting to data.js
 function errorLoadingData() {
 	window.failedToLoad = true;
 }
 </script>
-<script src='plugins/pace.min.js'></script>
-<link href='plugins/pace.theme.css' rel='stylesheet'/>
-<script src='data/data.js?v=2' onerror='errorLoadingData()'></script>
+<script src='data/data.js?v=3' onerror='errorLoadingData()'></script>
 <script>
-// Pace (loading bar) adjustment
-Pace.options = {
-	ajax: true
-};
 
 // Useful functions
 function getNo(str) {
@@ -97,6 +138,13 @@ function getNo(str) {
 </head>
 
 <body>
+
+<!-- Loading -->
+<div class="spinner" id='loading'>
+	<div class="bounce1"></div>
+	<div class="bounce2"></div>
+	<div class="bounce3"></div>
+</div>
 
 <div id='allBody' style='display: none;'>
 
@@ -153,7 +201,7 @@ Created by <a href='https://www.reddit.com/user/co3_carbonate/'>/u/co3_carbonate
 // If data.js failed to load, overwrite all content
 function loadingFailedCheck() {
 	if(failedToLoad) {
-		Pace.stop();
+		document.getElementById('loading').style.display = 'none';
 		document.getElementById('allBody').style.display = '';
 		document.getElementById('allBody').innerHTML = 'Server Error: Unable to load data. Please try again in 30 seconds.';
 		throw 'Server Error: Unable to load data.';
@@ -164,13 +212,15 @@ loadingFailedCheck();
 </script>
 <script>
 
-Pace.on('hide', function(){
+// Functions to execute when the page has loaded
+function loaded() {
 
 // Check if all data was able to load
 loadingFailedCheck();
 
 // Things to do once the document has loaded
 // Dynamically set text of certain parts of the document
+document.getElementById('loading').style.display = 'none';
 document.getElementById('allBody').style.display = '';
 document.getElementById('lastUpdated').innerHTML = getNo(chat[0].body);
 
@@ -338,7 +388,7 @@ document.getElementById('countDecrease').onclick = addOrMinus;
 
 
 
-}); // THE END
+} // THE END
 
 </script>
 

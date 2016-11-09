@@ -20,6 +20,7 @@ function loadJSON(path, success, error) {
 					error(xhr);
 				} else {
 					failedToLoad = true;
+					if(loadingFailedCheck) loadingFailedCheck();
 				}
 			}
 		}
@@ -37,8 +38,11 @@ loadJSON("data/lastChatFile.txt", function(data) {
 
 // Load all chat data afterwards
 function loadChatData(i) {
-	// Base case
-	if(i < 0) return;
+	// Base case (all data already loaded)
+	if(i < 0) { 
+		if(loaded) loaded();
+		return;
+	}
 
 	// Special case for first (newest) JSON file to prevent caching
 	var suffix = '';
@@ -52,6 +56,7 @@ function loadChatData(i) {
 		i--;
 		loadChatData(i);
 	});
+	
 }
 
 
