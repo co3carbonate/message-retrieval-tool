@@ -58,16 +58,18 @@ th:first-child, td:first-child {
 }
 </style>
 <script>
-var failedToLoad = false;
-function checkIfLoaded() {
-	if(typeof chat !== 'undefined') return;
-	failedToLoad = true;
-	throw 'Server Error: failed to load script. Try again in 30 seconds.';
+function errorLoadingData() {
+	window.failedToLoad = true;
 }
 </script>
-<script src='data.js?v=1' onerror='checkIfLoaded()'></script>
+<script src='plugins/pace.min.js'></script>
+<link href='plugins/pace.theme.css' rel='stylesheet'/>
+<script src='data/data.js?v=2' onerror='errorLoadingData()'></script>
 <script>
-
+// Pace (loading bar) adjustment
+Pace.options = {
+	ajax: false
+};
 
 // Useful functions
 function getNo(str) {
@@ -96,7 +98,7 @@ function getNo(str) {
 
 <body>
 
-<div id='allBody'>
+<div id='allBody' style='display: none;'>
 
 <!-- Heading -->
 Created by <a href='https://www.reddit.com/user/co3_carbonate/'>/u/co3_carbonate</a><br>
@@ -149,17 +151,27 @@ Created by <a href='https://www.reddit.com/user/co3_carbonate/'>/u/co3_carbonate
 <script>
 
 // If data.js failed to load, overwrite all content
-if(failedToLoad) {
-	document.getElementById('allBody').innerHTML = 'Server Error: Unable to load data. Please try again in 30 seconds.';
+function loadingFailedCheck() {
+	if(failedToLoad) {
+		Pace.stop();
+		document.getElementById('allBody').style.display = '';
+		document.getElementById('allBody').innerHTML = 'Server Error: Unable to load data. Please try again in 30 seconds.';
+		throw 'Server Error: Unable to load data.';
+	}
 }
+loadingFailedCheck();
 
 </script>
 <script>
 
-window.onload = function() {
+Pace.on('hide', function(){
 
-// Things to do when the document has loaded
+// Check if all data was able to load
+loadingFailedCheck();
+
+// Things to do once the document has loaded
 // Dynamically set text of certain parts of the document
+document.getElementById('allBody').style.display = '';
 document.getElementById('lastUpdated').innerHTML = getNo(chat[0].body);
 
 var now = new Date().toString();
@@ -326,7 +338,7 @@ document.getElementById('countDecrease').onclick = addOrMinus;
 
 
 
-}; // THE END
+}); // THE END
 
 </script>
 
