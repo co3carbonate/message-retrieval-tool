@@ -7,6 +7,9 @@ var chat = [];
 
 // Local functions/variables
 // Function to read from a JSON file
+var prevPercent = 0;
+var totalPercent = 0;
+var currentPercent = 0;
 function loadJSON(path, success, error) {
 	var xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function() {
@@ -15,6 +18,9 @@ function loadJSON(path, success, error) {
 				if (success) {
 					success(JSON.parse(xhr.responseText));
 				}
+				prevPercent += 100 / (lastChatFile + 2);
+				currentPercent = 0;
+				if(loadingProgress) loadingProgress(Math.floor(totalPercent));
 			} else {
 				if (error) {
 					error(xhr);
@@ -24,6 +30,13 @@ function loadJSON(path, success, error) {
 				}
 			}
 		}
+	};
+	xhr.onprogress = function(e) {
+		if(!e.lengthComputable) return;
+		if(!lastChatFile) return;
+		currentPercent = (e.loaded / e.total) * 100;
+		totalPercent = prevPercent + currentPercent / (lastChatFile + 2);
+		if(loadingProgress) loadingProgress(Math.floor(totalPercent));
 	};
 	xhr.open("GET", path, true);
 	xhr.send();
