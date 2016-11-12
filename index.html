@@ -224,7 +224,7 @@ loadingFailedCheck();
 
 <script>
 function loadingProgress(progress) {
-	document.getElementById('loadingPercent').innerHTML = progress;
+	document.getElementById('loadingPercent').innerHTML = Math.floor(progress);
 }
 </script>
 
