@@ -188,6 +188,13 @@ Created by <a href='https://www.reddit.com/user/co3_carbonate/'>/u/co3_carbonate
 	<input type='text' placeholder='Enter text'/>
 </label>
 
+<!-- Message from user -->
+<label>
+	<input type='radio' name='retrieveRadio'>
+	Retrieve messages from user:
+	<input type='text' placeholder='Enter username'/>
+</label>
+
 <!-- Retrieve button -->
 <br><br><input type='button' value='Retrieve' id='retrieveBtn'>
 
@@ -382,6 +389,12 @@ for(var i = 0, x = radios.length; i < x; i++) {
 					// Message containing text
 					filter = function(info, input) {
 						return info.body.indexOf(input) > -1;
+					};
+					break;
+				case 3:
+					// Message from user
+					filter = function(info, input) {
+						return info.author == input;
 					};
 					break;
 			}
