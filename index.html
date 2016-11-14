@@ -308,6 +308,7 @@ function retrieve() {
 			'operations': document.createElement('td')
 		};
 
+		if(info.stricken) newCols.body.style.textDecoration = 'line-through';
 		newCols.author.innerHTML = (info.author) ? 
 			'<a href="https://www.reddit.com/user/' + info.author + '">/u/' + info.author + '</a>'
 		: '[deleted]';
