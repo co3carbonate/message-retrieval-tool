@@ -195,6 +195,14 @@ Created by <a href='https://www.reddit.com/user/co3_carbonate/'>/u/co3_carbonate
 	<input type='text' placeholder='Enter username'/>
 </label>
 
+<!-- Custom filter function -->
+<label>
+	<input type='radio' name='retrieveRadio'>
+	Custom filter function (JavaScript):
+	<input type='text' placeholder='Return true/false'/>
+	[documentation coming soon]
+</label>
+
 <!-- Retrieve button -->
 <br><br><input type='button' value='Retrieve' id='retrieveBtn'>
 
@@ -262,7 +270,7 @@ var filter = function(info, input) {
 	return getNo(info.body) == input;
 };
 var selected = document.getElementsByClassName('selected')[0];
-var selectedInput = selected.querySelector('input[type=text], input[type=number');
+var selectedInput = selected.querySelector('input[type=text], input[type=number]');
 selectedInput.focus();
 var radios = document.getElementsByName('retrieveRadio');
 var inputs = document.querySelectorAll('label input[type=text], label input[type=number]');
@@ -277,6 +285,11 @@ function retrieve() {
 	// validate
 	var input = selectedInput.value;
 	if(input.trim().length == 0) return;
+
+	// update custom filter function
+	if(radios[4].checked) {
+		customFilterFunction = new Function('info', input);
+	}
 
 	// lookup
 	var results = [];
@@ -360,6 +373,10 @@ function enableDisableInputs() {
 }
 enableDisableInputs();
 
+// Custom filter function
+var customFilterFunction = function() { return false; };
+
+
 // Radio buttons clicked
 for(var i = 0, x = radios.length; i < x; i++) {
 	(function(i) {
@@ -397,6 +414,12 @@ for(var i = 0, x = radios.length; i < x; i++) {
 					filter = function(info, input) {
 						return info.author == input;
 					};
+					break;
+				case 4:
+					// Custom filter function
+					filter = function(info, input) {
+						return customFilterFunction(info);
+					}
 					break;
 			}
 		}
