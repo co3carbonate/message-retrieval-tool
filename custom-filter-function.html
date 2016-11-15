@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<base target='_blank'>
+<title>Custom Filter Function</title>
+</head>
+<body>
+
+<h1>Custom Filter Function</h1>
+
+<p>The Custom Filter Function is a useful feature of the Message Retrieval Tool. It enables the user to conveniently specify which messages he wishes to retrieve for his own personal desire.</p>
+
+<p>However, to use the custom filter function, the user requires knowledge of the JavaScript language. This page is a brief guide for users who know JavaScript on how to use the custom filter function. If you do not have knowledge of JavaScript, you can <a href='https://www.reddit.com/message/compose?to=co3_carbonate&subject=Custom%20Filter%20Function%20Request'>PM me on Reddit</a> to clearly specify what you need the custom filter function to do, and I will respond as soon as possible.</p>
+
+<p>From this point onwards, I would assume that you are fluent with JavaScript.</p>
+
+<p>The custom filter function is created from your input:</p>
+
+<pre>
+function customFilterFunction(info) {
+	// the code here is from your input; it should return true or false
+}
+</pre>
+
+<p>When you use the button 'Retrieve', each chat message is filtered through 'customFilterFunction' in chronological order (beginning with the oldest chat message). If the function returns true, this message will be displayed in the table of results. If the function returns false, it will not.</p>
+
+<p>The 'info' parameter is a JSON object that contains information about each chat message, as follows:</p>
+
+<pre>
+{
+	"body": "1",
+	"name": "LiveUpdate_1f9faa0c-12b0-11e4-ac25-12313b0c9247",
+	"author": "ralgrado",
+	"embeds": [],
+	"created": 1406179638,
+	"created_utc": 1406150838,
+	"body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;1&lt;/p&gt;\n&lt;/div&gt;",
+	"stricken": false,
+	"id": "1f9faa0c-12b0-11e4-ac25-12313b0c9247"
+}
+</pre>
+
+<p>The more important keys are "body" (raw content of the message), "author" (sender of the message), and "created_utc" (Unix time in UTC when the message was sent). The other keys are all rather self-explanatory.</p>
+
+<p>For example, if you wish to display all messages that contains 5 characters, your input will be:</p>
+
+<pre>return info.body.length == 5;</pre>
+
+<p>Do take note that the body will also include extra whitespace and newlines. A custom filter function like this will give more accurate results:</p>
+
+<pre>return info.body.replace(/\n/g, '').trim().length == 5;</pre>
+
+<p>There is also a useful global function "getNo":</p>
+
+<pre>
+function getNo(str) {
+	// returns the detected count in a string as a string
+	// if no count was detected, returns null
+	// Examples:
+	//     "1 2 3 4" => "1234"
+	//     "**5,678** wow" => "5678"
+	//     "a very very long comment by /u/TOP_20" => null
+}
+</pre>
+
+<p>For example, if you wish to filter messages with counts that end with "1234", you can input this:</p>
+
+<pre>
+var count = getNo(info.body);
+return (count == null) ? false : count.endsWith("1234");
+</pre>
+
+<p>This results in the table displaying a list of messages with counts that end with "1234".</p>
+
+<p>You can check for error messages thrown while executing custom filter functions in the browser console.</p>
+
+<p>Custom filter functions can be versatile in finding what you need. For example, you can use the following piece of code to search for messages by <a href='https://www.reddit.com/user/co3_carbonate/'>/u/co3_carbonate</a> that contains characters besides commas, numbers, dots, white spaces. In other words, it will result in a table of <a href='https://www.reddit.com/user/co3_carbonate/'>/u/co3_carbonate</a>'s messages that also contains other words.</p>
+
+<pre>
+if(info.author != 'co3_carbonate') { return false; }
+return info.body.match(/[^,.\d\s]/) != null;
+</pre>
+
+<p>As you can see, custom filter functions can be useful for your own needs, e.g. stalking.</p>
+
+<p>Hopefully this guide has helped you. If you have any questions, feel free to PM <a href='https://www.reddit.com/user/co3_carbonate/'>me</a> to clarify anything.</p>
+
+</body>
+</html>

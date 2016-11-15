@@ -200,11 +200,11 @@ Created by <a href='https://www.reddit.com/user/co3_carbonate/'>/u/co3_carbonate
 	<input type='radio' name='retrieveRadio'>
 	Custom filter function (JavaScript):
 	<input type='text' placeholder='Return true/false'/>
-	[documentation coming soon]
+	<a href='custom-filter-function.html'><input type='button' value='?'/></a>
 </label>
 
 <!-- Retrieve button -->
-<br><br><input type='button' value='Retrieve' id='retrieveBtn'>
+<br><br><input type='button' value='Retrieve' id='retrieveBtn'/>
 
 <br><br>
 
@@ -276,6 +276,7 @@ var radios = document.getElementsByName('retrieveRadio');
 var inputs = document.querySelectorAll('label input[type=text], label input[type=number]');
 var labels = document.querySelectorAll('label');
 var firstLookup = true;
+var customFilterIndex = 4;
 
 // --
 
@@ -287,7 +288,7 @@ function retrieve() {
 	if(input.trim().length == 0) return;
 
 	// update custom filter function
-	if(radios[4].checked) {
+	if(radios[customFilterIndex].checked) {
 		customFilterFunction = new Function('info', input);
 	}
 
@@ -364,6 +365,7 @@ for(var i = 0, x = inputs.length; i < x; i++) {
 // Function to handle inputs' (in label) disability (switching between enabled and disabled)
 function enableDisableInputs() {
 	for(var i = 0, x = labels.length; i < x; i++) {
+		if(i == customFilterIndex) { continue; }
 		var thisInputs = labels[i].querySelectorAll('input:not([type=radio])');
 		var bool = !labels[i].classList.contains('selected');
 		for(var j = 0, y = thisInputs.length; j < y; j++) {
@@ -375,7 +377,6 @@ enableDisableInputs();
 
 // Custom filter function
 var customFilterFunction = function() { return false; };
-
 
 // Radio buttons clicked
 for(var i = 0, x = radios.length; i < x; i++) {
