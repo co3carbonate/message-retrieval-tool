@@ -383,13 +383,13 @@ for(var i = 0, x = radios.length; i < x; i++) {
 				case 1:
 					// Message containing word
 					filter = function(info, input) {
-						return (' ' +info.body+ ' ').indexOf(' ' +input+ ' ') > -1;
+						return (' ' +info.body.toLowerCase()+ ' ').indexOf(' ' +input.toLowerCase()+ ' ') > -1;
 					};
 					break;
 				case 2:
 					// Message containing text
 					filter = function(info, input) {
-						return info.body.indexOf(input) > -1;
+						return info.body.toLowerCase().indexOf(input.toLowerCase()) > -1;
 					};
 					break;
 				case 3:
