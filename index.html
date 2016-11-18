@@ -284,8 +284,8 @@ var customFilterIndex = 4;
 // The 'filter' global variable is used to determine which messages should be included in the table
 function retrieve() {
 	// validate
-	var input = selectedInput.value;
-	if(input.trim().length == 0) return;
+	var input = selectedInput.value.trim();
+	if(input.length == 0) return;
 
 	// update custom filter function
 	if(radios[customFilterIndex].checked) {
