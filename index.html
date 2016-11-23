@@ -27,15 +27,14 @@ body {
 input[type=button] {
 	cursor: pointer;	
 }
-label {
-	display: block;
-	margin: 6px;
+input[type=text], input[type=number] {
+	width: 175px;
 }
-label:not(.selected) {
+#optionsTable tr:not(.selected) {
 	opacity: 0.5;
 	cursor: pointer;
 }
-label:not(.selected) > input[type=radio] {
+#optionsTable tr:not(.selected) > input[type=radio] {
 	cursor: pointer;
 }
 a[href] {
@@ -46,12 +45,20 @@ a[href]:hover {
 }
 table {
 	margin: 0 auto;
+	table-layout: fixed;
 }
 th, td {
 	padding: 8px;
 	white-space: normal;
 	word-wrap: break-word;
 }
+#optionsTable td {
+	padding: 4px;
+}
+#optionsTable td:nth-child(1) { text-align: right; }
+#optionsTable td:nth-child(2) { text-align: center; }
+#optionsTable td:nth-child(3) { text-align: left; }
+
 #table tr:hover {
 	background-color: #E1F2FF;
 }
@@ -166,43 +173,65 @@ Created by <a href='https://www.reddit.com/user/co3_carbonate/'>/u/co3_carbonate
 (Last updated to <span id='lastUpdated'>...</span>)<br><br>
 
 <!-- Options for Message Retrieval -->
+<table id='optionsTable'>
+
 <!-- Message with count -->
-<label class='selected'>
-	<input type='radio' name='retrieveRadio' checked>
-	Retrieve message with count:
-	<input type='number' placeholder='Enter number' id='countIn'/>
-	<input type='button' value='+' id='countIncrease'>
-	<input type='button' value='-' id='countDecrease'>
-</label>
+<tr class='selected'>
+	<td>
+		<input type='radio' name='retrieveRadio' checked>
+		Retrieve message with count:
+	</td>
+	<td><input type='number' placeholder='Enter number' id='countIn'/></td>
+	<td>
+		<input type='button' value='+' id='countIncrease'>
+		<input type='button' value='-' id='countDecrease'>
+	</td>
+</tr>
 
 <!-- Message containing word -->
-<label>
-	<input type='radio' name='retrieveRadio'>
-	Retrieve message containing word:
-	<input type='text' placeholder='Enter word'/>
-</label>
+<tr>
+	<td>
+		<input type='radio' name='retrieveRadio'>
+		Retrieve message containing word:
+	</td>
+	<td><input type='text' placeholder='Enter word'/></td>
+	<td></td>
+</tr>
 
 <!-- Message containing text -->
-<label>
-	<input type='radio' name='retrieveRadio'>
-	Retrieve message containing text:
-	<input type='text' placeholder='Enter text'/>
-</label>
+<tr>
+	<td>
+		<input type='radio' name='retrieveRadio'>
+		Retrieve message containing text:
+	</td>
+	<td><input type='text' placeholder='Enter text'/></td>
+	<td></td>
+</tr>
 
 <!-- Message from user -->
-<label>
-	<input type='radio' name='retrieveRadio'>
-	Retrieve messages from user:
-	<input type='text' placeholder='Enter username'/>
-</label>
+<tr>
+	<td>
+		<input type='radio' name='retrieveRadio'>
+		Retrieve messages from user:
+	</td>
+	<td><input type='text' placeholder='Enter username'/></td>
+	<td>
+	</td>
+</tr>
 
 <!-- Custom filter function -->
-<label>
-	<input type='radio' name='retrieveRadio'>
-	Custom filter function (JavaScript):
-	<input type='text' placeholder='Return true/false'/>
-	<a href='custom-filter-function.html'><input type='button' value='?'/></a>
-</label>
+<tr>
+	<td>
+		<input type='radio' name='retrieveRadio'>
+		Custom filter function (JavaScript):
+	</td>
+	<td><input type='text' placeholder='Return true/false' style='font-family: Monospace;'/></td>
+	<td>
+		<a href='custom-filter-function.html'><input type='button' value='?'/></a>
+	</td>
+</tr>
+
+</table>
 
 <!-- Retrieve button -->
 <br><br><input type='button' value='Retrieve' id='retrieveBtn'/>
@@ -210,13 +239,13 @@ Created by <a href='https://www.reddit.com/user/co3_carbonate/'>/u/co3_carbonate
 <br><br>
 
 <!-- Output Table -->
-<table style='display: none;'>
+<table style='display: none; width: 100%'>
 <thead><tr>
-	<th>#</th>
-	<th>Time (<span id='timezone'>...</span>)</th>
-	<th>Author</th>
-	<th>Body</th>
-	<th></th>
+	<th style='width: 4%;'>#</th>
+	<th style='width: 14%;'>Time (<span id='timezone'>...</span>)</th>
+	<th style='width: 14%;'>Author</th>
+	<th style='width: 60%'>Body</th>
+	<th style='width: 8%;'></th>
 </tr></thead>
 <tbody id='table'></tbody>
 </table><br><br>
@@ -274,8 +303,8 @@ var selected = document.getElementsByClassName('selected')[0];
 var selectedInput = selected.querySelector('input[type=text], input[type=number]');
 selectedInput.focus();
 var radios = document.getElementsByName('retrieveRadio');
-var inputs = document.querySelectorAll('label input[type=text], label input[type=number]');
-var labels = document.querySelectorAll('label');
+var inputs = document.querySelectorAll('tr input[type=text], tr input[type=number]');
+var rows = document.querySelectorAll('tr');
 var firstLookup = true;
 var customFilterIndex = 4;
 
@@ -288,7 +317,12 @@ function retrieve() {
 	var input = selectedInput.value.trim();
 	if(input.length == 0) return;
 
-	// update custom filter function
+	// special cases
+	// strip punctuation from input if retrieving message containing word
+	if(radios[1].checked) {
+		input = input.replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]/g, '').replace(/\s+/g, '');
+	}
+	// custom filter function
 	if(radios[customFilterIndex].checked) {
 		customFilterFunction = new Function('info', input);
 	}
@@ -363,12 +397,14 @@ for(var i = 0, x = inputs.length; i < x; i++) {
 	})(i);
 }
 
-// Function to handle inputs' (in label) disability (switching between enabled and disabled)
+// Function to handle inputs' (in table rows) disability (switching between enabled and disabled)
 function enableDisableInputs() {
-	for(var i = 0, x = labels.length; i < x; i++) {
-		if(i == customFilterIndex) { continue; }
-		var thisInputs = labels[i].querySelectorAll('input:not([type=radio])');
-		var bool = !labels[i].classList.contains('selected');
+	for(var i = 0, x = rows.length; i < x; i++) {
+		var thisInputs = 
+				(i != customFilterIndex) ?
+				rows[i].querySelectorAll('input:not([type=radio])') :
+				rows[i].querySelectorAll('input:not([type=radio]):not([type=text])');
+		var bool = !rows[i].classList.contains('selected');
 		for(var j = 0, y = thisInputs.length; j < y; j++) {
 			thisInputs[j].disabled = bool;
 		}
@@ -385,7 +421,7 @@ for(var i = 0, x = radios.length; i < x; i++) {
 		radios[i].onchange = function() {
 			if(this.parentNode.classList.contains('selected')) return; // already selected
 			selected.classList.remove('selected');
-			selected = this.parentNode;
+			selected = this.parentNode.parentNode;
 			selected.classList.add('selected');
 			selectedInput = selected.querySelector('input[type=text], input[type=number]');
 			enableDisableInputs();
@@ -402,7 +438,7 @@ for(var i = 0, x = radios.length; i < x; i++) {
 				case 1:
 					// Message containing word
 					filter = function(info, input) {
-						return (' ' +info.body.toLowerCase()+ ' ').indexOf(' ' +input.toLowerCase()+ ' ') > -1;
+						return info.body.replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]/g, '').split(' ').indexOf(input) > -1;
 					};
 					break;
 				case 2:
@@ -427,6 +463,20 @@ for(var i = 0, x = radios.length; i < x; i++) {
 		}
 	})(i);
 }
+
+// Trigger radio buttons when the table row is clicked
+for(var i = 0, x = rows.length; i < x; i++) {
+	(function(i) {
+		rows[i].onclick = function() {
+			var childRadios = this.querySelectorAll('input[type=radio]');
+			for(var j = 0, m = childRadios.length; j < m; j++) {
+				childRadios[j].checked = true;
+				childRadios[j].onchange();
+			}
+		}
+	})(i);
+} 
+
 
 // +/- key (only for count)
 function addOrMinus(val) {
