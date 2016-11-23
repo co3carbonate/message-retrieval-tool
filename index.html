@@ -318,9 +318,9 @@ function retrieve() {
 	if(input.length == 0) return;
 
 	// special cases
-	// strip punctuation from input if retrieving message containing word
+	// remove special characters for word search
 	if(radios[1].checked) {
-		input = input.replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]/g, '').replace(/\s+/g, '');
+		input = input.replace(/[^\w\s]/gi, '');
 	}
 	// custom filter function
 	if(radios[customFilterIndex].checked) {
@@ -344,7 +344,7 @@ function retrieve() {
 	var x = results.length;
 	document.getElementById('table').innerHTML = '';
 	document.getElementById('table').parentNode.style.display = '';
-	if(x == 0) document.getElementById('table').innerHTML = '<tr><td colspan="4">No message retrieved for this number</td></tr>';
+	if(x == 0) document.getElementById('table').innerHTML = '<tr><td colspan="4" style="text-align: center;">No message retrieved for this number</td></tr>';
 
 	for(var i = 0; i < x; i++) {
 		var info = results[i];
@@ -438,7 +438,7 @@ for(var i = 0, x = radios.length; i < x; i++) {
 				case 1:
 					// Message containing word
 					filter = function(info, input) {
-						return info.body.replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,\-.\/:;<=>?@\[\]^_`{|}~]/g, '').split(' ').indexOf(input) > -1;
+						return info.body.match(new RegExp("\\b" + input + "\\b")) != null;
 					};
 					break;
 				case 2:
