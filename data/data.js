@@ -50,7 +50,7 @@ function loadJSON(path, success, error) {
 var lastChatFile;
 
 // Load the value of lastChatFile first
-loadJSON("data/lastChatFile.txt", function(data) {
+loadJSON("data/lastChatFile.txt?v=" + Date.now(), function(data) {
 	lastChatFile = data;
 	loadChatData(lastChatFile);
 });
@@ -69,7 +69,7 @@ function loadChatData(i) {
 
 	// Load this chat data file
 	loadJSON("data/chat" +i+ ".json" +suffix, function(data) {
-		chat = chat.concat(data);
+		chat.push.apply(chat, data);
 
 		// Recurse to load next chat data file
 		i--;
