@@ -285,7 +285,12 @@ loadingFailedCheck();
 // Dynamically set text of certain parts of the document
 document.getElementById('loading').style.display = 'none';
 document.getElementById('allBody').style.display = '';
-document.getElementById('lastUpdated').innerHTML = getNo(chat[0].body);
+for(var i = 0, l = chat.length; i < l; i++) {
+	var firstNo = getNo(chat[i].body);
+	if(firstNo == null) continue;
+	document.getElementById('lastUpdated').innerHTML = firstNo;
+	break;
+}
 
 var now = new Date().toString();
 var TZ = now.indexOf('(') > -1 ?
