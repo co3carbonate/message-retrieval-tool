@@ -323,9 +323,17 @@ function retrieve() {
 	if(input.length == 0) return;
 
 	// special cases
-	// remove special characters for word search
+	// lowercase input for search by word/text
+	if(radios[1].checked || radios[2].checked) {
+		input = input.toLowerCase();
+	}
+	// use text search for word search instead if the input contains symbols
 	if(radios[1].checked) {
-		input = input.replace(/[^\w\s]/gi, '');
+		if(/[^\w\s]/gi.test(input)) {
+			filter = function(info, input) {
+				return info.body.toLowerCase().indexOf(input) > -1;
+			};
+		}
 	}
 	// custom filter function
 	if(radios[customFilterIndex].checked) {
@@ -443,13 +451,13 @@ for(var i = 0, x = radios.length; i < x; i++) {
 				case 1:
 					// Message containing word
 					filter = function(info, input) {
-						return info.body.match(new RegExp("\\b" + input + "\\b")) != null;
+						return info.body.toLowerCase().match(new RegExp("\\b" + input + "\\b")) != null;
 					};
 					break;
 				case 2:
 					// Message containing text
 					filter = function(info, input) {
-						return info.body.toLowerCase().indexOf(input.toLowerCase()) > -1;
+						return info.body.toLowerCase().indexOf(input) > -1;
 					};
 					break;
 				case 3:
