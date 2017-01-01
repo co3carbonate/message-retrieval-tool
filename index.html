@@ -24,7 +24,7 @@ body {
 	font-size: 18px;
 	text-align: center;
 }
-input[type=button] {
+input[type=button], input[type=checkbox] {
 	cursor: pointer;	
 }
 input[type=text], input[type=number] {
@@ -119,37 +119,63 @@ th:first-child, td:first-child {
 	}
 }
 
+/* Data selection style */
+#selectDataDone {
+	position: fixed;
+	width: 100%;
+	height: 25px;
+	bottom: 0;
+	left: 0;
+	padding: 5px;
+	background-color: white;
+}
+
+
 </style>
 <script>
 // Error connecting to data.js
+var failedToLoad = false;
 function errorLoadingData() {
-	window.failedToLoad = true;
+	failedToLoad = true;
 }
 </script>
-<script src='data/data.js?v=3' onerror='errorLoadingData()'></script>
+<script src='data/data.js?v=4' onerror='errorLoadingData()'></script>
 <script>
 
 // Useful functions
+function formatCommas(str) {
+	return str.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 function getNo(str) {
 	str = str.trim();
-    var l = str.length;
-    if(l == 0) return null;
-        
-    var r = '';
-    for(var i = 0; i < l; i++) {
-        var s = str.charAt(i);
-        if(/^\d+$/.test(s)) {
-            r += s;
-            continue;
-        }
-        else if([' ', ',', '~', '^', '#', '*', '>', '`'].indexOf(s) > -1) {
-            continue;
-        } else {
-            break;    
-        }
-    }
-    if(r == '' || !/\d/.test(r)) r = null;
-    return r;
+	var l = str.length;
+	if(l == 0) return null;
+		
+	var r = '';
+	for(var i = 0; i < l; i++) {
+		var s = str.charAt(i);
+		if(s == '0' || s == '1' || s == '2' || s == '3' || s == '4' ||
+		   s == '5' || s == '6' || s == '7' || s == '8' || s == '9') {
+			r += s;
+			continue;
+		}
+		else if(s == ' ' || s == ',' || s == '.') {
+			continue;
+		}
+		else if(s == '~' || s == '^' || s == '>' ||
+				s == '#' || s == '*' || s == '\n') {
+			if(r.length == 0) {
+				continue;
+			} else {
+				break;
+			}
+
+		} else {
+			break;    
+		}
+	}
+	if(r.length == 0) r = null;
+	return r;
 }
 
 </script>
@@ -157,8 +183,44 @@ function getNo(str) {
 
 <body>
 
+<!-- Selecting data -->
+<div id='selectData'>
+	<h2>Select data to load</h2>
+	<p>(Note: Selecting more data slows down the application)</p>
+
+	<table id='selectDataTable'>
+		<tr><th><input type='checkbox'/></th><th>Range</th></tr>
+		<tr><td><input type='checkbox'/></td><td>1,293,588 - 1,319,010</td></tr>
+		<tr><td><input type='checkbox'/></td><td>1,234,235 - 1,293,587</td></tr>
+		<tr><td><input type='checkbox'/></td><td>1,174,328 - 1,234,234</td></tr>
+		<tr><td><input type='checkbox'/></td><td>1,114,236 - 1,174,327</td></tr>
+		<tr><td><input type='checkbox'/></td><td>1,054,607 - 1,114,235</td></tr>
+		<tr><td><input type='checkbox'/></td><td>1,000,505 - 1,054,606</td></tr>
+		<tr><td><input type='checkbox'/></td><td>940,232 - 1,000,504</td></tr>
+		<tr><td><input type='checkbox'/></td><td>880,823 - 940,231</td></tr>
+		<tr><td><input type='checkbox'/></td><td>820,018 - 880,822</td></tr>
+		<tr><td><input type='checkbox'/></td><td>759,398 - 820,017</td></tr>
+		<tr><td><input type='checkbox'/></td><td>699,124 - 759,397</td></tr>
+		<tr><td><input type='checkbox'/></td><td>638,709 - 699,123</td></tr>
+		<tr><td><input type='checkbox'/></td><td>577,128 - 638,708</td></tr>
+		<tr><td><input type='checkbox'/></td><td>516,269 - 577,127</td></tr>
+		<tr><td><input type='checkbox'/></td><td>455,097 - 516,268</td></tr>
+		<tr><td><input type='checkbox'/></td><td>390,699 - 455,096</td></tr>
+		<tr><td><input type='checkbox'/></td><td>327,074 - 390,698</td></tr>
+		<tr><td><input type='checkbox'/></td><td>261,509 - 327,073</td></tr>
+		<tr><td><input type='checkbox'/></td><td>195,780 - 261,508</td></tr>
+		<tr><td><input type='checkbox'/></td><td>128,973 - 195,779</td></tr>
+		<tr><td><input type='checkbox'/></td><td>65,702 - 128,972</td></tr>
+		<tr><td><input type='checkbox'/></td><td>1 - 65,701</td></tr>
+	</table><br><br>
+
+	<div id='selectDataDone'>
+		<input type='button' value='Done' id='selectDataDoneBtn'/>
+	</div>
+</div>
+
 <!-- Loading -->
-<div class="spinner" id='loading'>
+<div class="spinner" id='loading' style='display: none;'>
 	<h2>Loading (<span id='loadingPercent'>0</span>%)</h2>
 	<div class="bounce1"></div>
 	<div class="bounce2"></div>
@@ -170,7 +232,7 @@ function getNo(str) {
 <!-- Heading -->
 Created by <a href='https://www.reddit.com/user/co3_carbonate/'>/u/co3_carbonate</a><br>
 <h1>Message Retrieval Tool</h1>
-(Last updated to <span id='lastUpdated'>...</span>)<br><br>
+(Using data from <span id='dataLastElem'>...</span> to <span id='dataFirstElem'>...</span>)<br><br>
 
 <!-- Options for Message Retrieval -->
 <table id='optionsTable'>
@@ -252,22 +314,56 @@ Created by <a href='https://www.reddit.com/user/co3_carbonate/'>/u/co3_carbonate
 
 </div>
 
+
 <script>
 
+// Select Data Handling
+var filesToLoad = [];
+(function() {
+	// Setup
+	var checkboxes = document.querySelectorAll('#selectData input[type=checkbox]');
+	var len = checkboxes.length;
+	checkboxes[1].checked = true;
+
+	// Select all checkboxes (first row)
+	checkboxes[0].onchange = function() {
+		var checked = this.checked;
+		for(var i = 1; i < len; i++) {
+			checkboxes[i].checked = checked;
+		}
+	}
+
+	// Submit
+	document.getElementById('selectDataDoneBtn').onclick = function() {
+		var checkedBoxes = [];
+		for(var i = 1; i < len; i++) {
+			if(checkboxes[i].checked) checkedBoxes.push(len - i - 1);
+		}
+		filesToLoad = checkedBoxes.reverse();
+		document.getElementById('loading').style.display = '';
+		document.getElementById('selectData').style.display = 'none';
+		loadAllData();
+	}
+
+})();
+
+
+</script>
+
+<script>
+
+// Loading handling
 // If data.js failed to load, overwrite all content
 function loadingFailedCheck() {
 	if(failedToLoad) {
+		document.getElementById('selectData').style.display = 'none';
 		document.getElementById('loading').style.display = 'none';
 		document.getElementById('allBody').style.display = '';
 		document.getElementById('allBody').innerHTML = 'Server Error: Unable to load data. Please try again in 30 seconds.';
 		throw 'Server Error: Unable to load data.';
 	}
 }
-loadingFailedCheck();
 
-</script>
-
-<script>
 function loadingProgress(progress) {
 	document.getElementById('loadingPercent').innerHTML = Math.floor(progress);
 }
@@ -283,12 +379,22 @@ loadingFailedCheck();
 
 // Things to do once the document has loaded
 // Dynamically set text of certain parts of the document
+document.getElementById('selectData').style.display = 'none';
 document.getElementById('loading').style.display = 'none';
 document.getElementById('allBody').style.display = '';
+
+// Accurate up to...
+var l = chat.length;
 for(var i = 0, l = chat.length; i < l; i++) {
-	var firstNo = getNo(chat[i].body);
-	if(firstNo == null) continue;
-	document.getElementById('lastUpdated').innerHTML = firstNo;
+	var firstElem = getNo(chat[i].body);
+	if(chat[i].stricken || firstElem == null) continue;
+	document.getElementById('dataFirstElem').innerHTML = formatCommas(firstElem);
+	break;
+}
+for(var i = l - 1; i >= 0; i--) {
+	var lastElem = getNo(chat[i].body);
+	if(chat[i].stricken || lastElem == null) continue;
+	document.getElementById('dataLastElem').innerHTML = formatCommas(lastElem);
 	break;
 }
 
@@ -299,11 +405,41 @@ now.match(/[A-Z]{3,4}/)[0];
 if (TZ == "GMT" && /(GMT\W*\d{4})/.test(now)) TZ = RegExp.$1;
 document.getElementById('timezone').innerHTML = TZ;
 
+
 // More global variables
-var l = chat.length;
+// Filter functions
 var filter = function(info, input) {
 	return getNo(info.body) == input;
 };
+var filterFuncs = [
+	// Message with count
+	function(info, input) {
+		return getNo(info.body) == input;
+	},
+	
+	// Message containing word
+	function(info, input) {
+		return info.body.toLowerCase().match(new RegExp("\\b" + input + "\\b")) != null;
+	},
+	
+	// Message containing text
+	function(info, input) {
+		return info.body.toLowerCase().indexOf(input) > -1;
+	},
+	
+	// Message from user
+	function(info, input) {
+		return info.author == input;
+	},
+	
+	// Custom filter function
+	function(info, input) {
+		//return customFilterFunction(info);
+		return false;
+	}
+];
+
+// Elements
 var selected = document.getElementsByClassName('selected')[0];
 var selectedInput = selected.querySelector('input[type=text], input[type=number]');
 selectedInput.focus();
@@ -312,6 +448,8 @@ var inputs = document.querySelectorAll('tr input[type=text], tr input[type=numbe
 var rows = document.querySelectorAll('tr');
 var firstLookup = true;
 var customFilterIndex = 4;
+
+
 
 // --
 
@@ -330,14 +468,12 @@ function retrieve() {
 	// use text search for word search instead if the input contains symbols
 	if(radios[1].checked) {
 		if(/[^\w\s]/gi.test(input)) {
-			filter = function(info, input) {
-				return info.body.toLowerCase().indexOf(input) > -1;
-			};
+			filter = filterFuncs[2];
 		}
 	}
 	// custom filter function
 	if(radios[customFilterIndex].checked) {
-		customFilterFunction = new Function('info', input);
+		filter = new Function('info', input);
 	}
 
 	// lookup
@@ -380,9 +516,9 @@ function retrieve() {
 
 		var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 		var date = new Date(0);
-    	date.setUTCSeconds(info.created_utc);
-    	var hours = date.getHours();
-    	var suffix = (hours >= 12) ? 'pm' : 'am';
+		date.setUTCSeconds(info.created_utc);
+		var hours = date.getHours();
+		var suffix = (hours >= 12) ? 'pm' : 'am';
 		hours = ((hours + 11) % 12 + 1);
 		newCols.time.innerHTML = date.getDate() + ' ' +  months[date.getMonth()] + " '" + date.getFullYear().toString().substring(2) + ' ' + hours +':'+ ('0' + (date.getMinutes())).slice(-2) + suffix;
 
@@ -425,9 +561,6 @@ function enableDisableInputs() {
 }
 enableDisableInputs();
 
-// Custom filter function
-var customFilterFunction = function() { return false; };
-
 // Radio buttons clicked
 for(var i = 0, x = radios.length; i < x; i++) {
 	(function(i) {
@@ -441,38 +574,7 @@ for(var i = 0, x = radios.length; i < x; i++) {
 			setTimeout(function() {
 				selectedInput.focus(); 
 			}, 0);
-			switch(i) {
-				case 0:
-					// Message with count
-					filter = function(info, input) {
-						return getNo(info.body) == input;
-					};
-					break;
-				case 1:
-					// Message containing word
-					filter = function(info, input) {
-						return info.body.toLowerCase().match(new RegExp("\\b" + input + "\\b")) != null;
-					};
-					break;
-				case 2:
-					// Message containing text
-					filter = function(info, input) {
-						return info.body.toLowerCase().indexOf(input) > -1;
-					};
-					break;
-				case 3:
-					// Message from user
-					filter = function(info, input) {
-						return info.author == input;
-					};
-					break;
-				case 4:
-					// Custom filter function
-					filter = function(info, input) {
-						return customFilterFunction(info);
-					}
-					break;
-			}
+			filter = filterFuncs[i];
 		}
 	})(i);
 }

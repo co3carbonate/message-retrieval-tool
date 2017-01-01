@@ -1,5 +1,4 @@
 // Global variables
-var failedToLoad = false;
 var chat = [];
 
 // Start collecting data
@@ -49,17 +48,11 @@ function loadJSON(path, success, error) {
 }
 var lastChatFile;
 
-// Load the value of lastChatFile first
-loadJSON("data/lastChatFile.txt?v=" + Date.now(), function(data) {
-	lastChatFile = data;
-	loadChatData(lastChatFile);
-});
-
-// Load all chat data afterwards
+// Load chat data (recursion) 
 function loadChatData(i) {
 	// Base case (all data already loaded)
 	if(i < 0) { 
-		if(loaded) loaded();
+		loaded();
 		return;
 	}
 
@@ -68,16 +61,20 @@ function loadChatData(i) {
 	if(i == lastChatFile) suffix = '?v=' + Date.now();
 
 	// Load this chat data file
-	loadJSON("data/chat" +i+ ".json" +suffix, function(data) {
+	loadJSON("data/chat" +filesToLoad[i]+ ".json" +suffix, function(data) {
 		chat.push.apply(chat, data);
 
 		// Recurse to load next chat data file
-		i--;
-		loadChatData(i);
+		loadChatData(i - 1);
 	});
 	
 }
 
+// Load all data (trigger)
+window.loadAllData = function() {
+	lastChatFile = filesToLoad.length - 1;
+	loadChatData(lastChatFile);
+}
 
 })(); // THE END
 
