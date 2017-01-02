@@ -38,7 +38,7 @@ function loadJSON(path, success, error) {
 		if(!e.lengthComputable) return;
 		if(!lastChatFile) return;
 		currentPercent = (e.loaded / e.total) * 100;
-		totalPercent = prevPercent + currentPercent / (lastChatFile + 2);
+		totalPercent = prevPercent + currentPercent / (lastChatFile + 1);
 		if(typeof loadingProgress === "function") {
 			loadingProgress(totalPercent);
 		}
