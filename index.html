@@ -190,7 +190,8 @@ function getNo(str) {
 
 	<table id='selectDataTable'>
 		<tr><th><input type='checkbox'/></th><th>Range</th></tr>
-		<tr><td><input type='checkbox'/></td><td>1,518,221 - 1,560,026</td></tr>
+		<tr><td><input type='checkbox'/></td><td>1,575,436 - 1,582,261</td></tr>
+		<tr><td><input type='checkbox'/></td><td>1,518,221 - 1,575,435</td></tr>
 		<tr><td><input type='checkbox'/></td><td>1,461,012 - 1,518,220</td></tr>
 		<tr><td><input type='checkbox'/></td><td>1,404,613 - 1,461,011</td></tr>
 		<tr><td><input type='checkbox'/></td><td>1,350,004 - 1,404,612</td></tr>
@@ -497,7 +498,7 @@ function retrieve() {
 	var x = results.length;
 	document.getElementById('table').innerHTML = '';
 	document.getElementById('table').parentNode.style.display = '';
-	if(x == 0) document.getElementById('table').innerHTML = '<tr><td colspan="4" style="text-align: center;">No message retrieved for this number</td></tr>';
+	if(x == 0) document.getElementById('table').innerHTML = '<tr><td colspan="4" style="text-align: center;">No messages retrieved</td></tr>';
 
 	for(var i = 0; i < x; i++) {
 		var info = results[i];
