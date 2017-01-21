@@ -120,6 +120,9 @@ th:first-child, td:first-child {
 }
 
 /* Data selection style */
+#selectData h2 {
+	margin: 0px;
+}
 #selectDataDone {
 	position: fixed;
 	width: 100%;
@@ -183,6 +186,10 @@ function getNo(str) {
 
 <body>
 
+<!-- Heading -->
+Created by <a href='https://www.reddit.com/user/co3_carbonate/'>/u/co3_carbonate</a><br>
+<h1>Message Retrieval Tool</h1>
+
 <!-- Selecting data -->
 <div id='selectData'>
 	<h2>Select data to load</h2>
@@ -234,9 +241,6 @@ function getNo(str) {
 
 <div id='allBody' style='display: none;'>
 
-<!-- Heading -->
-Created by <a href='https://www.reddit.com/user/co3_carbonate/'>/u/co3_carbonate</a><br>
-<h1>Message Retrieval Tool</h1>
 (Using data from <span id='dataLastElem'>...</span> to <span id='dataFirstElem'>...</span>)<br><br>
 
 <!-- Options for Message Retrieval -->
